@@ -1,0 +1,148 @@
+{% extends "base_wordcloud.html" %}
+
+{% block init_script %}
+<script>
+    // Initialization
+    $(document).ready(function() {
+         window.page = new WordcloudPage();
+         window.page.init();
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div id="by_month">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Word usage by month<span id='lblMonthName' style="font-weight: bold"></span>
+                    <button type="button" class="btn" id="btnPrev"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span> Prev</button>
+                    <button type="button" class="btn" id="btnNext">Next <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span></button>
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div id="sldMonth"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 visualization-container" id="visualizationContainer">
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function WordcloudPage() {
+            this.curSlider = 0;
+        }
+
+        WordcloudPage.prototype.init = function() {
+            var self = this;
+            self.tagCloud = new D3TagCloud("#visualizationContainer");
+            self.initSlider();
+
+            $('#btnNext').click(function(e) {
+                self.curSlider = self.curSlider + 1;
+                if (self.curSlider >= self.dates.length) self.curSlider = self.dates.length-1;
+                $("#sldMonth").slider('value',self.curSlider);
+            });
+
+            $('#btnPrev').click(function(e) {
+                self.curSlider = self.curSlider - 1;
+                if (self.curSlider < 0) self.curSlider = 0;
+                $("#sldMonth").slider('value',self.curSlider);
+            });
+        }
+
+        WordcloudPage.prototype.initSlider = function() {
+            var self = this;
+            self.dates = [];
+            dates_years = [];
+            for (var y = {{min_year}}; y < {{max_year}}; y++) {
+                for (var m = 1; m <= 12; m++) {
+                    var sm = (m < 10) ? "0" + m : "" + m;
+                    self.dates[self.dates.length] = "" + y + "-" + sm;
+                    dates_years[dates_years.length] = "" + y;
+                }
+            }
+
+            $("#sldMonth").slider({
+                min: 0,
+                max: self.dates.length-1,
+                value: 0,
+            })
+                .slider("float", {
+                    rest: "label",
+                    labels: self.dates,
+                })
+                .slider("pips", {
+                    labels: dates_years
+                })
+                .on("slidechange", function(e, ui) {
+                    self.curSlider = ui.value;
+                    self.showCloud();
+                })
+        }
+
+        WordcloudPage.prototype.showWordUsageDialog = function(word) {
+            var url =  "/wordstats/by_month/" + word;
+            $.ajax({url: url})
+                .error(function(error) { alert("A terrible error occurred!"); })
+                .done(function(data) {
+                    var vals = ['Log odds'];
+                    var cats = ['x'];
+                    for (var i = 0; i < data.data.length; i++) {
+                        vals[vals.length] = data.data[i].value;
+                        cats[cats.length] = data.data[i].month;
+                    }
+                    var chart = c3.generate({
+                        bindto: '#pnlWordUsage',
+                        size: { width: 568 },
+                        data: {
+                            x: 'x',
+                            columns: [
+                                cats, vals
+                            ],
+                            type: 'bar'
+                        },
+                        bar: { width: { ratio: 0.8 } },
+                        axis : {
+                            x : {
+                                type : 'category',
+                                categories: cats,
+                                tick: {
+                                    count: {{max_year - min_year + 1}}
+                                }
+                            }
+                        },
+                        legend: { hide: true }
+                    });
+                    $("#lblWordUsageTitle").html("<b>" + word + "</b>: usage by month (log-odds)");
+                    $("#dlgWordUsage").modal('show');
+              });
+        }
+
+
+        WordcloudPage.prototype.showCloud = function() {
+            var self = this;
+            var code = self.dates[self.curSlider];
+            var url = "/words/by_month/" + code;
+            document.getElementById('lblMonthName').innerHTML = ": " + code;
+            $.ajax({url: url})
+                .error(function(error) { alert("A terrible error occurred!"); })
+                .done(function(data) {
+                    self.tagCloud.update(data.words);
+                    $('text.tag').click(function(e) {
+                        self.showWordUsageDialog(this.innerHTML);
+                    })
+                });
+        }
+
+    </script>
+</div>
+
+
+
+
+{% endblock %}

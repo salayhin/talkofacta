@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block style_block %}
+    <link href="{{config['APPLICATION_ROOT']}}static/css/flag-icon.min.css" rel="stylesheet" />
+    <link href="{{config['APPLICATION_ROOT']}}static/css/c3.min.css" rel="stylesheet" />
+    <link href="{{config['APPLICATION_ROOT']}}static/css/d3.slider.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.4/themes/flick/jquery-ui.css">
+    <link href="{{config['APPLICATION_ROOT']}}static/css/jquery-ui-slider-pips.css" rel="stylesheet" />
+{% endblock %}
+
+{% block tail_script %}
+    <script src="{{config['APPLICATION_ROOT']}}static/js/d3.js"></script>
+    <script src="{{config['APPLICATION_ROOT']}}static/js/tagcloud_d3.js"></script>
+    <script src="{{config['APPLICATION_ROOT']}}static/js/d3.layout.cloud.js"></script>
+    <script src="{{config['APPLICATION_ROOT']}}static/js/colorbrewer.js"></script>
+    <script src="{{config['APPLICATION_ROOT']}}static/js/c3.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+    <script src="{{config['APPLICATION_ROOT']}}static/js/jquery-ui-slider-pips.min.js"></script>
+
+    {% block init_script %}
+    {% endblock %}
+
+    {% include 'includes/dlgWordUsage.html' %}
+{% endblock %}

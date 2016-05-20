@@ -1,0 +1,45 @@
+.button-hansard {
+    margin: 0px 5px 5px 0px;
+    border-radius: 0px;
+    width: 60px;
+}
+
+.visualization-container svg {
+    display: block;
+    margin: 0px auto;
+}
+
+
+text.tag {
+    cursor: pointer;
+}
+
+text.tag:hover {
+    text-decoration: underline;
+}
+
+
+#hideOnClick {
+    width: 100%;
+    text-align: center;
+    margin: 10px;
+    font-weight: bold;
+}
+
+
+/* -------- Slider ----------- */
+.ui-slider.ui-slider-pips  {}
+.ui-slider-float {}
+    .ui-slider-handle {}
+#sldMonth        .ui-slider-tip { width: 55px; }
+    .ui-slider-pip {}
+    .ui-slider-pip-first {}
+    .ui-slider-pip-last {}
+    .ui-slider-pip-nth {}
+    .ui-slider-pip-label {}
+    .ui-slider-pip-hide {}
+        .ui-slider-line {}
+        .ui-slider-label {}
+        .ui-slider-tip-label {}
+    .ui-slider-pip-selected-initial {}
+    .ui-slider-pip-selected {}

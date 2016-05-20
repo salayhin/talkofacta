@@ -1,0 +1,110 @@
+{% extends "base_wordcloud.html" %}
+
+{% block init_script %}
+<script>
+    // Initialization
+    $(document).ready(function() {
+         window.page = new WordcloudPage();
+         window.page.init();
+         window.page.showCloud();
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div id="by_hansard">
+    <div class="container">
+        <div class="row"><div class="col-xs-12"><h2>Word usage by hansard<span id='lblHansardName' style="font-weight: bold"></span></h2></div></div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                  <label for="slHansard">Choose a hansard:</label>
+                  <select class="form-control" id="slHansard">
+                    {% for c in hansards %}
+                        <option>{{c}}</option>
+                    {% endfor %}
+                  </select>
+                  <label title="Leave only those words that no other hansard has significantly often"><input type="checkbox" id="chkUnique"/>&nbsp;Unique</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 visualization-container" id="visualizationContainer">
+                <p id="hideOnClick">Choose a hansard...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function WordcloudPage() {
+            this.unique = false;
+            this.hansard = 'ACTA';
+        }
+
+        WordcloudPage.prototype.init = function() {
+            var self = this;
+            self.tagCloud = new D3TagCloud("#visualizationContainer");
+
+            $('#slHansard').change(function(e) {
+                self.hansard = this.value;
+                self.showCloud();
+            });
+
+            $('#chkUnique').click(function(e) {
+                self.unique = document.getElementById("chkUnique").checked;
+                if (self.hansard != '') self.showCloud();
+            });
+        }
+
+        WordcloudPage.prototype.showWordUsageDialog = function(word) {
+            var url =  "/wordstats/by_hansard/" + word;
+            $.ajax({url: url})
+                .error(function(error) { alert("A terrible error occurred!"); })
+                .done(function(data) {
+                    var vals = ['Log odds'];
+                    var cats = [];
+                    for (var i = 0; i < data.data.length; i++) {
+                        vals[vals.length] = data.data[i].value;
+                        cats[cats.length] = data.data[i].hansard;
+                    }
+                    var chart = c3.generate({
+                        bindto: '#pnlWordUsage',
+                        size: { width: 568 },
+                        data: {
+                            columns: [
+                                vals
+                            ],
+                            type: 'bar'
+                        },
+                        bar: { width: { ratio: 0.8 } },
+                        axis : {
+                            x : {
+                                type : 'category',
+                                categories: cats
+                            }
+                        },
+                        legend: { hide: true }
+                    });
+                    $("#lblWordUsageTitle").html("<b>" + word + "</b>: usage by hansard (log-odds)");
+                    $("#dlgWordUsage").modal('show');
+              });
+        }
+
+        WordcloudPage.prototype.showCloud = function() {
+            var self = this;
+            var url = "/words/by_hansard/" + self.hansard + (self.unique ? "?unique=1" : "");
+            document.getElementById('lblHansardName').innerHTML = ": " + self.hansard + (self.unique ? " (unique)" : "");
+            d3.select("#hideOnClick").remove();
+            $.ajax({url: url})
+                .error(function(error) { alert("A terrible error occurred!"); })
+                .done(function(data) {
+                    self.tagCloud.update(data.words);
+                    $('text.tag').click(function(e) {
+                        self.showWordUsageDialog(this.innerHTML);
+                    })
+                });
+        }
+    </script>
+</div>
+
+{% endblock %}

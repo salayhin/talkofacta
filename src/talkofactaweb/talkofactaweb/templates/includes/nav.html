@@ -1,0 +1,18 @@
+<div class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{{config['APPLICATION_ROOT']}}">
+                <img style="margin-right: 3px; margin-bottom: 0.25em; height: 20px; display: inline" src="{{config['APPLICATION_ROOT']}}static/img/favicon32.png">&nbsp;Talk of ACTA: Significant words
+            </a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Choose visualization <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{{url_for('by_hansard')}}">By Hansard</a></li>
+                <li><a href="{{url_for('by_month')}}">By Month</a></li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,3 @@
+recursive-include talkofactaweb/templates *.html
+recursive-include talkofactaweb/static *
+recursive-include data *.sqlite
