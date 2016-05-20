@@ -36,7 +36,7 @@ class Speech(Base):
     __tablename__ = 'speech'
     id = Column(Integer, primary_key=True)
     date = Column(Date, nullable=False, index=True)
-    speaker_uri = Column(Unicode(200), nullable=False, index=True)
+    speaker = Column(Unicode(200), nullable=False, index=True)
     hansard = Column(String(3), nullable=False, index=True)
     speech = Column(Unicode, nullable=False)
 

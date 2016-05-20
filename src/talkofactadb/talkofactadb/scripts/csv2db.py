@@ -26,14 +26,40 @@ def main():
     Base.metadata.create_all(e)
     Session = sessionmaker(e)
     s = Session()
+
+    # mapping month name with number
+    month_number = {'Marzo' : '03',
+           'Abril' : '04',
+           'Mayo' : '05',
+           'Junio' : '06',
+           'Julio' : '07',
+           'Agosto' : '08',
+           'Septiembre' : '09',
+           'Octubre' : '10',
+           'Noviembre' : '11',
+           'Diciembre' : '12'
+    }
+
+
     with gzip.open(os.path.join(c.textdb_dir, 'acta.csv.gz'), 'rb') as csv_file:
         reader = csv.reader(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
         reader.next()   # Skip header
         for row in progress.mill(reader, label='Writing to DB ', expected_size=10000, every=1000):
-            sp = Speech(date=datetime.strptime(row[3], '%Y-%m-%d'),
-                        speaker_uri=unicode(row[1], 'utf-8'),
+
+            if row[2]:
+                datformating = (row[2]).split(' ')
+
+                month = datformating[2]
+                year = datformating[4]
+                day = datformating[0]
+                date = year + '-' + month_number[month] + '-' + day
+            else:
+                date = '2000-12-12'
+
+            sp = Speech(date=datetime.strptime(str(date), '%Y-%m-%d'),
+                        speaker=unicode(row[1], 'utf-8'),
                         hansard=unicode(row[0], 'utf-8'),
-                        speech=unicode(row[2], 'utf-8'))
+                        speech=unicode(row[3], 'utf-8'))
             s.add(sp)
     print "Committing..."
     s.commit()
