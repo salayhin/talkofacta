@@ -1,10 +1,11 @@
+#!/usr/bin/env bash
 # Talk of ACTA analysis script
 # The timings below correspond to num_cores = 20
 
 # Create directories
 mkdir -p data/zodb
 
-export CONFIG=sample_config.py
+export CONFIG=my_config.py
 
 # ---------- Convert CSV into DB ----------
 # We use SQLite in our experiments

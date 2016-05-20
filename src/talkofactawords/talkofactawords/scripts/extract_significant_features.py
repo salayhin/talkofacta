@@ -160,7 +160,7 @@ class WordBySpeaker(ExperimentSet):
 
         print "Loading db..."
         session = open_db()
-        self.all_speakers = [r[0] for r in session.query(distinct(Speech.speaker_uri))]
+        self.all_speakers = [r[0] for r in session.query(distinct(Speech.speaker))]
 
     def list_foreground_groups(self):
         return self.all_speakers
@@ -176,7 +176,7 @@ class WordBySpeaker(ExperimentSet):
         zodb = open_zodb(self.config, read_only=True)
         result = Counter()
         wordset = zodb.all_words
-        for (id,) in session.query(Speech.id).filter(Speech.speaker_uri == group_name):
+        for (id,) in session.query(Speech.id).filter(Speech.speaker == group_name):
             v = zodb.features[self.feature_name][id]
             for w in v:
                 if w in wordset:
